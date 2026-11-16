@@ -1,0 +1,69 @@
+name: Good first issue
+description: A small, well-scoped task for a first-time contributor
+title: ""
+labels: ["good first issue", "help wanted"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is a beginner-friendly task. You do not need to know the codebase.
+
+        **How to start**
+        1. Comment on this issue so nobody duplicates the work.
+        2. Read [`CONTRIBUTING.md`](https://github.com/pooria683/repo-doctor/blob/main/CONTRIBUTING.md).
+        3. Ask questions here — a question is not a delay.
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What is missing or wrong, and where does it live?
+    validations:
+      required: true
+
+  - type: textarea
+    id: task
+    attributes:
+      label: What needs to be done
+      description: Concrete, checkable steps.
+      placeholder: |
+        - [ ] Add rule `quality/no-debugger` in src/rules/quality.ts
+        - [ ] Append it to the exported array
+        - [ ] Document it in docs/rules.md
+    validations:
+      required: true
+
+  - type: textarea
+    id: hints
+    attributes:
+      label: Hints
+      description: Files to look at, a similar implementation, commands to run.
+      placeholder: |
+        - Similar rule: `quality/typescript-not-strict` in src/rules/quality.ts
+        - Test pattern: tests/containers.test.ts
+        - Verify with: npm test
+    validations:
+      required: false
+
+  - type: dropdown
+    id: effort
+    attributes:
+      label: Estimated effort
+      options:
+        - "~30 minutes"
+        - "1–2 hours"
+        - "Half a day"
+    validations:
+      required: true
+
+  - type: textarea
+    id: done
+    attributes:
+      label: Definition of done
+      placeholder: |
+        - [ ] Behaviour implemented
+        - [ ] Tests added (positive and negative fixture)
+        - [ ] docs/rules.md updated
+        - [ ] npm test && npm run self-scan pass
+    validations:
+      required: true

@@ -1,0 +1,123 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test (node ${{ matrix.node }} / ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node: [18, 20, 22]
+        include:
+          - os: macos-latest
+            node: 20
+          - os: windows-latest
+            node: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Repository guard rails
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+  # Dogfooding: Repo Doctor scans Repo Doctor on every pull request.
+  self-scan:
+    name: Self scan
+    runs-on: ubuntu-latest
+    needs: test
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Scan the repository
+        run: node dist/cli/index.js scan . --format sarif --output repo-doctor.sarif --fail-on high
+
+      - name: Upload SARIF to code scanning
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: repo-doctor.sarif
+          category: repo-doctor
+
+      - name: Publish the Markdown report
+        if: always()
+        run: node dist/cli/index.js report --from .repo-doctor/report.json --format markdown --output repo-doctor-report.md || true
+
+      - name: Upload the Markdown report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: repo-doctor-report
+          path: repo-doctor-report.md
+          if-no-files-found: ignore
+
+  package:
+    name: Package smoke test
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Verify the published artefact
+        run: |
+          npm pack --dry-run
+          test -f dist/cli/index.js
+          node dist/cli/index.js --version
+          node dist/cli/index.js rules --validate
+      - name: Scan an empty directory (must not crash)
+        run: |
+          mkdir -p /tmp/empty-repo
+          node dist/cli/index.js scan /tmp/empty-repo --fail-on never --quiet

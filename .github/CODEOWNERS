@@ -1,0 +1,10 @@
+# Default owner for everything in the repo.
+* @pooria683
+
+# Security-sensitive surfaces need an explicit review.
+/.github/ @pooria683
+/src/rules/secrets.ts @pooria683
+/src/util/git.ts @pooria683
+/src/fix/ @pooria683
+/SECURITY.md @pooria683
+/data/ @pooria683
