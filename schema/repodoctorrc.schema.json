@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/pooria683/repo-doctor/main/schema/repodoctorrc.schema.json",
+  "title": "Repo Doctor configuration",
+  "description": "Configuration for the repo-doctor CLI. Place this in .repodoctorrc.json, .repodoctorrc, repo-doctor.config.json, or under the \"repoDoctor\" key of package.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Optional pointer to this schema, for editor autocompletion."
+    },
+    "ignore": {
+      "type": "array",
+      "description": "Glob patterns (relative to the repository root) that are never read.",
+      "items": { "type": "string", "minLength": 1 },
+      "examples": [["dist/**", "coverage/**", "**/fixtures/**"]]
+    },
+    "rules": {
+      "type": "object",
+      "description": "Per-rule settings, keyed by rule id (see `repo-doctor rules`).",
+      "propertyNames": { "pattern": "^[a-z]+/[a-z0-9-]+$" },
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "const": "off",
+            "description": "Disable the rule entirely."
+          },
+          {
+            "enum": ["critical", "high", "medium", "low", "info"],
+            "description": "Re-grade every finding produced by the rule."
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "enabled": { "type": "boolean", "default": true },
+              "severity": { "enum": ["critical", "high", "medium", "low", "info"] },
+              "options": {
+                "type": "object",
+                "description": "Rule-specific tuning; see docs/rules.md.",
+                "additionalProperties": true
+              }
+            }
+          }
+        ]
+      }
+    },
+    "failOn": {
+      "description": "Exit with code 1 when a finding at or above this severity exists.",
+      "enum": ["critical", "high", "medium", "low", "info", "never"],
+      "default": "high"
+    },
+    "sensitiveFiles": {
+      "type": "array",
+      "description": "Extra globs treated as sensitive files, added to the built-in list.",
+      "items": { "type": "string" }
+    },
+    "secretPatterns": {
+      "type": "array",
+      "description": "Extra secret patterns (JavaScript regular expression sources, matched case-insensitively).",
+      "items": { "type": "string" }
+    },
+    "weights": {
+      "type": "object",
+      "description": "Category weights used when combining category scores. Defaults: security 1.5, documentation 1.2, dependencies 1.2, others 1.",
+      "additionalProperties": false,
+      "properties": {
+        "documentation": { "type": "number", "minimum": 0, "maximum": 10 },
+        "security": { "type": "number", "minimum": 0, "maximum": 10 },
+        "dependencies": { "type": "number", "minimum": 0, "maximum": 10 },
+        "quality": { "type": "number", "minimum": 0, "maximum": 10 },
+        "containers": { "type": "number", "minimum": 0, "maximum": 10 },
+        "ci": { "type": "number", "minimum": 0, "maximum": 10 },
+        "community": { "type": "number", "minimum": 0, "maximum": 10 }
+      }
+    },
+    "includeInfo": {
+      "type": "boolean",
+      "description": "Include info-level findings in the report.",
+      "default": true
+    },
+    "maxFiles": {
+      "type": "integer",
+      "description": "Maximum number of files to walk.",
+      "minimum": 1,
+      "maximum": 200000,
+      "default": 5000
+    },
+    "license": {
+      "type": "string",
+      "description": "SPDX id used when generating a LICENSE file. MIT, ISC, BSD-3-Clause and Unlicense can be rendered offline.",
+      "default": "MIT"
+    },
+    "copyrightHolder": {
+      "type": "string",
+      "description": "Copyright holder written into a generated LICENSE.",
+      "default": ""
+    }
+  },
+  "examples": [
+    {
+      "$schema": "https://raw.githubusercontent.com/pooria683/repo-doctor/main/schema/repodoctorrc.schema.json",
+      "failOn": "high",
+      "ignore": ["dist/**", "coverage/**"],
+      "rules": {
+        "ci/code-scanning-missing": "off",
+        "docs/changelog-missing": "info",
+        "deps/install-script": { "severity": "low" }
+      },
+      "weights": { "security": 2 },
+      "license": "MIT",
+      "copyrightHolder": "Example Ltd"
+    }
+  ]
+}

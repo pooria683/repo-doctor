@@ -1,0 +1,68 @@
+name: Feature request
+description: Suggest a new rule, ecosystem, format or capability
+title: "feat: "
+labels: ["enhancement", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please describe the problem before the solution — it usually leads to a
+        better design. Rule ideas are especially welcome; see
+        `docs/rules.md` for what already exists.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+      description: What did you try, and where did Repo Doctor fall short?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: |
+        For a new rule, include the id you would use, the default severity, the
+        detection idea, and the false positives you expect.
+      placeholder: |
+        Rule id: quality/no-debugger
+        Severity: low
+        Detects: a `debugger` statement in committed JS/TS
+        False positives: template strings that contain the word
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - New rule
+        - New ecosystem (dependencies)
+        - Report format
+        - CLI / configuration
+        - Fixes / scaffolding
+        - Performance
+        - Documentation
+        - Something else
+    validations:
+      required: true
+
+  - type: dropdown
+    id: contribution
+    attributes:
+      label: Would you like to implement it?
+      options:
+        - "Yes, I can open a pull request"
+        - "Yes, with guidance"
+        - "No"
+    validations:
+      required: true

@@ -1,0 +1,49 @@
+{
+  "name": "repo-doctor",
+  "version": "0.1.0",
+  "description": "Offline-first health scanner for open-source repositories: docs, security, dependencies, CI and community readiness, with actionable fixes.",
+  "keywords": [
+    "repository",
+    "linter",
+    "audit",
+    "security",
+    "open-source",
+    "ci",
+    "developer-experience",
+    "cli"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=18.17.0"
+  },
+  "bin": {
+    "repo-doctor": "dist/cli/index.js"
+  },
+  "exports": {
+    ".": "./dist/core/index.js"
+  },
+  "files": [
+    "dist",
+    "data",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "build:test": "tsc -p tsconfig.test.json",
+    "test": "npm run build:test && node --test \"dist-test/tests/**/*.test.js\"",
+    "test:only": "node --test \"dist-test/tests/**/*.test.js\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "node scripts/lint-guard.mjs",
+    "self-scan": "npm run build && node dist/cli/index.js scan . --fail-on high",
+    "clean": "rm -rf dist dist-test",
+    "verify": "npm run typecheck && npm test && npm run lint && npm run build && npm run self-scan",
+    "prepublishOnly": "npm run verify"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
+}

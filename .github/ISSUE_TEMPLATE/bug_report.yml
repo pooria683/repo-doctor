@@ -1,0 +1,95 @@
+name: Bug report
+description: Something does not behave as documented
+title: "bug: "
+labels: ["bug", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. A minimal reproduction is the single most useful
+        thing you can provide — often it is just a two-file fake repository.
+
+        For security problems, **stop**: use
+        https://github.com/pooria683/repo-doctor/security/advisories/new instead.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: The actual behaviour, including the full command and output.
+      placeholder: |
+        $ repo-doctor scan ./fixture
+        ✖ HIGH (1) ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: |
+        The smallest file tree that reproduces it. A `tree` listing plus the
+        contents of the relevant files is enough for most scanner bugs.
+      placeholder: |
+        # tree
+        fixture/
+        ├── README.md        (empty)
+        └── package.json     ({})
+
+        # command
+        repo-doctor scan fixture
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Repo Doctor version
+      description: Output of `repo-doctor --version`.
+      placeholder: "0.1.0"
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS and Node.js version (`node --version`).
+      placeholder: "Ubuntu 24.04, Node 20.11.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: rule
+    attributes:
+      label: Which rule is involved? (if known)
+      description: Run `repo-doctor rules` for the full list.
+      options:
+        - Not sure
+        - docs/*
+        - security/*
+        - deps/*
+        - quality/*
+        - containers/*
+        - ci/*
+        - community/*
+        - CLI / output / exit codes
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and this is not a duplicate
+          required: true
+        - label: I removed any real secrets from the reproduction
+          required: true
